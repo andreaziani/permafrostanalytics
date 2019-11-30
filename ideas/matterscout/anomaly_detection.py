@@ -59,7 +59,7 @@ def calculate_entropy(v):
 
 # extracts statistical features
 def min_max_estractor(row):
-    return [np.min(row), np.max(row), np.var(row), np.mean(row ** 2)]  # calculate_entropy(row),
+    return [np.max(row), np.mean(row), np.min(row), np.var(row), np.mean(row ** 2)]  # calculate_entropy(row),
     # np.percentile(row, 1), np.percentile(row, 5), np.percentile(row, 25),
     # np.percentile(row, 95), np.percentile(row, 95), np.percentile(row, 99)]
 
@@ -89,16 +89,16 @@ def fourier_extractor(x):
 
 # extracts features from an hour worth of seismic data from three sensors
 def transform_hour(data):
-    data = np.array(data)
+    data = np.array(data)[0][-3:]
     # print(data)
     # print(data.shape)
     features = []
-    for first_dimension in data:
-        for row in first_dimension:
-            # print(row.shape)
-            for extractor in [min_max_estractor]:  # , fourier_extractor]:
-                for element in extractor(row):
-                    features.append(element)
+    #for first_dimension in data:
+    for row in data:
+        #print(row.shape)
+        for extractor in [min_max_estractor]:  # , fourier_extractor]:
+            for element in extractor(row):
+                features.append(element)
     features = np.array(features)
     return features
 
@@ -122,6 +122,7 @@ def load_seismic_source(start, end):
     output = []
     dates = []
     for date in pd.date_range(start, end, freq='1H'):
+        print(date)
         try:
             seismic_node = stuett.data.SeismicSource(
                 store=store,
@@ -130,9 +131,11 @@ def load_seismic_source(start, end):
                 start_time=date,
                 end_time=date + timedelta(hours=1),
             )
-            print(date)
+            #print(seismic_node())
+            newline = transform_hour(seismic_node())
+            #print(len(newline))
+            output.append(newline)
             dates.append(date)
-            output.append(transform_hour(seismic_node()))
         except:
             pass
     return dates, output
@@ -174,19 +177,25 @@ prec_node = stuett.data.CsvSource(prec_file, store=derived_store)
 prec = prec_node().to_dataframe()
 prec = prec.reset_index('name').drop(["unit"], axis=1).pivot(columns='name', values='CSV').drop(["position"], axis=1)
 
-dates, seismic_data = load_seismic_source(start=date(2017, 2, 2), end=date(2017, 2, 3))
+dates, seismic_data = load_seismic_source(start=date(2017, 11, 1), end=date(2017, 11, 30))
 seismic_data = np.array(seismic_data)
+#print(seismic_data)
 seismic_df = pd.DataFrame(seismic_data)
+print(seismic_df.describe())
+#print(len(seismic_df))
+#print(len(dates))
 seismic_df["date"] = dates
 seismic_df = seismic_df.set_index("date")
 
 # dataset = seismic_df.join(rock_temperature).join(prec)
 dataset = seismic_df.join(prec)
-dataset = pd.DataFrame(SimpleImputer(strategy="constant").fit_transform(dataset), index=dataset.index,
-                       columns=dataset.columns)
+dataset = dataset.fillna(0)
+#dataset = pd.DataFrame(SimpleImputer(strategy="constant").fit_transform(dataset), index=dataset.index,
+                       #columns=dataset.columns)
 
 print(dataset.describe())
-#dataset.to_csv("seismic_prec_temp.csv")
+dataset.to_csv("seismic_11.csv")
+exit(0)
 
 n_samples = 300
 outliers_fraction = 0.05
