@@ -6,8 +6,8 @@ var result_data = {
     "name": "Heavy rain",
     "description":"We recorded an intense amount of rain, unusual for the period. Below you can see the details of the amount of rain recorded by our sensors.",
     "images": [1,2,3,4,5],
-    "sensors": "2017-02-02_07:00:00",
-    "time":"2017-02-02 07:00:00",
+    "sensors": "2017-09-03_05:00:00",
+    "time":"2017-09-03_05:00:00",
     "id":1,
     "severity":2
   },
@@ -15,7 +15,7 @@ var result_data = {
     "name": "Hailstorm",
     "description":"We recorded a light hailstorm during the morning.",
     "images": [1,2,3,4,5],
-    "sensors": "1.csv",
+    "sensors": "2017-08-06_05:00:00",
     "time":"2017-30-03-09:00:00",
     "id":2,
     "severity":1
