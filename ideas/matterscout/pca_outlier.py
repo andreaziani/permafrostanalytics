@@ -19,6 +19,7 @@ from scipy.fftpack import fft
 from sklearn.impute import SimpleImputer
 import time
 import os
+from sklearn.decomposition import PCA
 
 
 account_name = (
@@ -75,7 +76,14 @@ for data_file in os.listdir("raw_data"):
 dataset = pd.concat(data)
 dataset = dataset.set_index("date")
 prec = dataset[["hail_accumulation","hail_duration","hail_intensity","hail_peak_intensity","rain_accumulation","rain_duration","rain_intensity","rain_peak_intensity"]]
-print(dataset.describe())
+print(dataset)
+
+pca = PCA(n_components=3)
+transformed_dataset = pca.fit_transform(dataset.values)
+result = pd.DataFrame(transformed_dataset, index=dataset.index)
+print(result)
+result.to_csv('pca.csv')
+exit(0)
 algorithm = IsolationForest(behaviour='new',
                             contamination=0.01,
                             random_state=42, verbose=1)
