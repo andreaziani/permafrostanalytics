@@ -7,7 +7,7 @@ var result_data = {
     "description":"We recorded an intense amount of rain, unusual for the period. Below you can see the details of the amount of rain recorded by our sensors.",
     "images": [1,2,3,4,5],
     "sensors": "2017-09-03_05:00:00",
-    "time":"2017-09-03_05:00:00",
+    "time":"2017-09-03 05:00:00",
     "id":1,
     "severity":3.9
   },
@@ -16,18 +16,18 @@ var result_data = {
     "description":"We recorded a light hailstorm during the morning.",
     "images": [1,2,3,4,5],
     "sensors": "2017-08-06_10:00:00",
-    "time":"2017-08-06_10:00:00",
+    "time":"2017-08-06 10:00:00",
     "id":2,
-    "severity":1
+    "severity":4.7
   },
   3 : {
     "name": "Hailstorm",
     "description":"We recorded a light hailstorm during the morning.",
     "images": [1,2,3,4,5],
     "sensors": "2017-07-06_20:00:00",
-    "time":"2017-07-06_20:00:00",
+    "time":"2017-07-06 20:00:00",
     "id":2,
-    "severity":1
+    "severity":3.2
   }
 };
 
