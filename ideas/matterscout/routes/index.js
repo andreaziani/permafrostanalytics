@@ -9,7 +9,7 @@ var result_data = {
     "sensors": "2017-09-03_05:00:00",
     "time":"2017-09-03_05:00:00",
     "id":1,
-    "severity":2
+    "severity":3.9
   },
   2 : {
     "name": "Hailstorm",
@@ -24,8 +24,8 @@ var result_data = {
     "name": "Hailstorm",
     "description":"We recorded a light hailstorm during the morning.",
     "images": [1,2,3,4,5],
-    "sensors": "2017-08-06_10:00:00",
-    "time":"2017-08-06_10:00:00",
+    "sensors": "2017-07-06_20:00:00",
+    "time":"2017-07-06_20:00:00",
     "id":2,
     "severity":1
   }
