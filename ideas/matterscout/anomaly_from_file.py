@@ -11,6 +11,7 @@ from matplotlib.pyplot import imshow
 import anomaly_visualization
 from dateutil import rrule
 from datetime import date, timedelta
+from datetime import datetime
 from sklearn.covariance import EllipticEnvelope
 from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
@@ -51,24 +52,28 @@ image_store = stuett.ABSStore(
 
 
 def get_seismic_data(date):
+    d = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
     return np.array(stuett.data.SeismicSource(
         store=store,
         station="MH36",
         channel=["EHE", "EHN", "EHZ"],
-        start_time=date,
-        end_time=date + timedelta(hours=1),
+        start_time=d,
+        end_time=d + timedelta(hours=1),
     )())
-
+"""
 prec_node = stuett.data.CsvSource(prec_file, store=derived_store)
 prec = prec_node().to_dataframe()
 prec = prec.reset_index('name').drop(["unit"], axis=1).pivot(columns='name', values='CSV').drop(["position"], axis=1)
-
+"""
 data = []
 for data_file in os.listdir("raw_data"):
-    data.append(pd.read_csv(data_file))
+    print(os.path.join(data_file))
+    data.append(pd.read_csv(os.path.join("raw_data", data_file)))
 
 dataset = pd.concat(data)
-
+dataset = dataset.set_index("date")
+prec = dataset[["hail_accumulation","hail_duration","hail_intensity","hail_peak_intensity","rain_accumulation","rain_duration","rain_intensity","rain_peak_intensity"]]
+print(dataset.describe())
 algorithm = IsolationForest(behaviour='new',
                             contamination=0.05,
                             random_state=42)
