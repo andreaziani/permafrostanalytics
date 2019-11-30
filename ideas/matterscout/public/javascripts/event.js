@@ -1,4 +1,7 @@
-Plotly.d3.csv("/data/2017-02-02_07:00:00/seismic_data.csv", function(err, rows){
+var path = "/data/"+$("#get-event").val()+"/seismic_data.csv";
+
+
+Plotly.d3.csv(path, function(err, rows){
 
     function unpack(rows, key) {
         return rows.map(function(row) { return row[key]; });
@@ -29,6 +32,8 @@ Plotly.d3.csv("/data/2017-02-02_07:00:00/seismic_data.csv", function(err, rows){
     var layout = {
         title: 'Seismic Data',
     };
+
+
 
     Plotly.newPlot('plot_data', data, layout, {showSendToCloud: true});
 });
