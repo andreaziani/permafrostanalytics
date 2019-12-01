@@ -1,4 +1,6 @@
 ![hackathon](https://gitlab.ethz.ch/tec/public/employees/matthias-meyer/permafrostanalytics/uploads/59173d0b6489ef11b5f81fca029b31ab/hackathon.jpg)
+# Winning project 
+You can find the winning project in `/idea/matterscout`
 
 # PermafrostAnalytics: Repository for the Hackathon on Permafrost
 
