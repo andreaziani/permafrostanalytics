@@ -1,3 +1,8 @@
+#these functionalities have been moved and integrated with anomaly_detection.py
+#this was the first script in which we attempted to extract features from the sataset, focusing on seismic measurements alone
+
+#extracted features are written to a csv file and later used
+
 import scipy
 import stuett
 from stuett.global_config import get_setting, setting_exists, set_setting
@@ -45,7 +50,6 @@ image_store = stuett.ABSStore(
     account_key=account_key,
 )
 
-
 #calculates entropy on the measurements
 def calculate_entropy(v):
     counter_values = Counter(v).most_common()
@@ -53,7 +57,7 @@ def calculate_entropy(v):
     entropy = scipy.stats.entropy(probabilities)
     return entropy
 
-#extracts statistical features
+#extracts statistical features (we decided not to include entropy)
 def min_max_estractor(row):
     return  [np.min(row), np.max(row), np.var(row), np.mean((row-np.mean(row))**2), np.mean(row**2),#calculate_entropy(row),
             np.percentile(row, 1), np.percentile(row, 5), np.percentile(row, 25),
@@ -67,6 +71,7 @@ def fourier_extractor(x):
     fft_values_ = fft(x)
     fft_values = 2.0/N * np.abs(fft_values_[0:N//2])
 
+    #the following values were determined empirically
     coeff_0=fft_values[0] #coefficient at 0Hz
     peak_70=0 #coefficient around 70 Hz
     coeff = np.zeros(20) #max coefficient from each 2 Hz interval (0-40)
@@ -86,16 +91,12 @@ def transform_hour(data):
     data = np.array(data)
     features=[]
     print('Extracting features')
-    for extractor in [min_max_estractor]:#, fourier_extractor]:
+    for extractor in [min_max_estractor]:#, fourier_extractor]:     #we choose to exclude Fourier features for computational efficiency
         for element in extractor(data):
             features.append(element)
     return features
 
-def transform_minute(data):
-    pass
-
-
-# Load the data source
+# Load the data source and apply transformations
 def load_seismic_source(start, end):
     output = []
     dates = []
@@ -115,15 +116,7 @@ def load_seismic_source(start, end):
             print('Error')
     return dates, output
 
-def load_image_source():
-    image_node = stuett.data.MHDSLRFilenames(
-        store=store,
-        force_write_to_remote=True,
-        as_pandas=False,
-    )
-    return image_node, 3
-
-dates, seismic_data = np.array(load_seismic_source(start=date(2017, 1, 1), end=date(2018, 1, 1)))
+dates, seismic_data = np.array(load_seismic_source(start=date(2017, 1, 1), end=date(2018, 1, 1)))   #test time window
 seismic_df = pd.DataFrame(seismic_data)
 seismic_df["date"] = dates
 seismic_df.set_index("date")

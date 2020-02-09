@@ -1,3 +1,7 @@
+#this is an adaptation of the anomaly_detection script to also perform PCA
+#it was proposet to represent events as a point cloud using this technique, but the idea was abandoned for time restrictions
+#most lines used here are commented in the original script
+
 import scipy
 import stuett
 from stuett.global_config import get_setting, setting_exists, set_setting
@@ -20,7 +24,6 @@ from sklearn.impute import SimpleImputer
 import time
 import os
 from sklearn.decomposition import PCA
-
 
 account_name = (
     get_setting("azure")["account_name"]
@@ -51,6 +54,11 @@ image_store = stuett.ABSStore(
     account_key=account_key,
 )
 
+def get_images_from_timestamps(store, start, end):
+    return stuett.data.MHDSLRFilenames(store=store,
+                                       start_time=start,
+                                       end_time=end,
+                                       as_pandas=True)
 
 def get_seismic_data(date):
     d = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
@@ -61,11 +69,8 @@ def get_seismic_data(date):
         start_time=d,
         end_time=d + timedelta(hours=1),
     )())
-"""
-prec_node = stuett.data.CsvSource(prec_file, store=derived_store)
-prec = prec_node().to_dataframe()
-prec = prec.reset_index('name').drop(["unit"], axis=1).pivot(columns='name', values='CSV').drop(["position"], axis=1)
-"""
+
+#retrieve local data
 data = []
 for data_file in os.listdir('.'):
     print(data_file)
@@ -78,18 +83,22 @@ dataset = dataset.set_index("date")
 prec = dataset[["hail_accumulation","hail_duration","hail_intensity","hail_peak_intensity","rain_accumulation","rain_duration","rain_intensity","rain_peak_intensity"]]
 print(dataset)
 
+#perform PCA
 pca = PCA(n_components=3)
 transformed_dataset = pca.fit_transform(dataset.values)
 result = pd.DataFrame(transformed_dataset, index=dataset.index)
 print(result)
 result.to_csv('pca.csv')
+
+#COMMENT OUT to also try predicting
 exit(0)
+
+#it is possible to train the isolation forest on a dataset with recuded dimensions, althought we chose not to expore this possibility
 algorithm = IsolationForest(behaviour='new',
                             contamination=0.01,
                             random_state=42, verbose=1)
 
 y_pred = algorithm.fit_predict(dataset.values)
-print('predicted')
 '''
 os.makedirs("data/normal/", exist_ok=True)
 normals = dataset[y_pred > 0].sample(100)
@@ -101,8 +110,6 @@ normal_seismic = np.median(np.array(normal_seismic), axis=0)
 normal_seismic = pd.DataFrame(np.transpose(normal_seismic), columns=["EHE", "EHN", "EHZ"])
 normal_seismic.to_csv("data/normal/seismic_data.csv", header=True)
 '''
-print('here')
-
 scores = algorithm.decision_function(dataset[y_pred < 0].values)
 scores_min = scores.min()
 scores_max = scores.max()
