@@ -1,4 +1,4 @@
-#these functionalities have been moved and integrated with anomaly_detection.py
+#these functionalities have been moved and integrated with the anomaly_detection package
 #this was the first script in which we attempted to extract features from the sataset, focusing on seismic measurements alone
 
 #extracted features are written to a csv file and later used
